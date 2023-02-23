@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<%- include('layouts/head'); -%>
+	</head>
+
+	<body>
+		<!--	Header	-->
+		<%- include('layouts/header'); -%>
+		<!--	End Header	-->
+
+		<!--	Body	-->
+		<div id="body">
+			<div class="container">
+				<div class="row">
+					<div id="main" class="col-lg-8 col-md-12 col-sm-12">
+						<!--	Slider	-->
+						<%- include('layouts/slider'); -%>
+						<!--	End Slider	-->
+						<br />
+						<% if(error) {%>
+						<div class="alert alert-danger"><%=error%></div>
+						<%}%>
+						<div class="panel-body">
+							<form role="form" method="post">
+								<fieldset>
+									<div class="form-group">
+										<input
+											class="form-control"
+											placeholder="E-mail"
+											name="mail"
+											type="email"
+											autofocus
+										/>
+									</div>
+									<div class="form-group">
+										<input
+											class="form-control"
+											placeholder="Mật khẩu"
+											name="pass"
+											type="password"
+											value=""
+										/>
+									</div>
+									<div class="checkbox">
+										<label>
+											<input
+												name="remember"
+												type="checkbox"
+												value="Remember Me"
+											/>Nhớ tài khoản
+										</label>
+									</div>
+									<button type="submit" class="btn btn-primary">
+										Đăng nhập
+									</button>
+								</fieldset>
+								<br />
+								<p>
+									Nếu chưa có tài khoản vui lòng
+									<a href="/register">đăng lý</a> tại đây
+								</p>
+							</form>
+						</div>
+					</div>
+
+					<div id="sidebar" class="col-lg-4 col-md-12 col-sm-12">
+						<div id="banner">
+							<div class="banner-item">
+								<a href="#">
+									<img
+										class="img-fluid"
+										src="/static/local/images/banner-1.png"
+									/>
+								</a>
+							</div>
+							<div class="banner-item">
+								<a href="#">
+									<img
+										class="img-fluid"
+										src="/static/local/images/banner-2.png"
+									/>
+								</a>
+							</div>
+							<div class="banner-item">
+								<a href="#"
+									><img
+										class="img-fluid"
+										src="/static/local/images/banner-4.png"
+								/></a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--	End Body	-->
+
+		<!--	Footer	-->
+		<%- include('layouts/footer'); -%>
+		<!--	End Footer	-->
+	</body>
+</html>

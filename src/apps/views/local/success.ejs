@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<%- include('layouts/head'); -%>
+		<link rel="stylesheet" href="/static/local/css/success.css" />
+	</head>
+	<body>
+		<!--	Header	-->
+		<%- include('layouts/header'); -%>
+		<!--	End Header	-->
+
+		<!--	Body	-->
+		<div id="body">
+			<div class="container">
+				<div class="row">
+					<div id="main" class="col-lg-8 col-md-12 col-sm-12">
+						<!--	Slider	-->
+						<%- include('layouts/slider'); -%>
+						<!--	End Slider	-->
+
+						<!--	Order Success	-->
+						<div id="order-success">
+							<div class="row">
+								<div
+									id="order-success-img"
+									class="col-lg-3 col-md-3 col-sm-12"
+								></div>
+								<div id="order-success-txt" class="col-lg-9 col-md-9 col-sm-12">
+									<h2><%=message%></h2>
+									<p>Vui lòng kiểm tra email để xem lại thông tin.</p>
+								</div>
+							</div>
+						</div>
+						<!--	End Order Success	-->
+					</div>
+
+					<div id="sidebar" class="col-lg-4 col-md-12 col-sm-12">
+						<div id="banner">
+							<div class="banner-item">
+								<a href="#">
+									<img
+										class="img-fluid"
+										src="/static/local/images/banner-1.png"
+									/>
+								</a>
+							</div>
+							<div class="banner-item">
+								<a href="#">
+									<img
+										class="img-fluid"
+										src="/static/local/images/banner-2.png"
+									/>
+								</a>
+							</div>
+							<div class="banner-item">
+								<a href="#"
+									><img
+										class="img-fluid"
+										src="/static/local/images/banner-3.png"
+								/></a>
+							</div>
+							<div class="banner-item">
+								<a href="#"
+									><img
+										class="img-fluid"
+										src="/static/local/images/banner-4.png"
+								/></a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--	End Body	-->
+
+		<!--	Footer	-->
+		<%- include('layouts/footer'); -%>
+		<!--	End Footer	-->
+	</body>
+</html>

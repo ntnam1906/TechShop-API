@@ -1,0 +1,51 @@
+<div id="pagination">
+	<% if (pages > 0 ) { %>
+	<ul class="pagination">
+		<% if (current == 1 ) {%>
+		<li class="page-item disabled">
+			<a class="page-link" href="#">Trang đầu</a>
+		</li>
+		<%} else {%>
+		<li class="page-item">
+			<a class="page-link" href="<%= url %>">Trang đầu</a>
+		</li>
+		<%}%>
+		<!--  -->
+		<% var i = (current > 3 ? current - 2 : 1)%>
+		<!--  -->
+		<% if (i !== 1 ) { %>
+		<li class="page-item disabled">
+			<a class="page-link" href="#">...</a>
+		</li>
+		<%}%>
+		<!--  -->
+		<% for (; i <= current + 2 && i <= pages; i++) { %>
+		<!--  -->
+		<% if (i == current) { %>
+		<li class="page-item active">
+			<a class="page-link" href="<%= url %>page=<%= i %>"> <%= i %> </a>
+		</li>
+		<%} else { %>
+		<li class="page-item">
+			<a class="page-link" href="<%= url %>page=<%= i %>"> <%= i %> </a>
+		</li>
+		<%}%>
+		<!--  -->
+		<% if (i == current + 2 && i < pages) { %>
+		<li class="page-item disabled">
+			<a class="page-link" href="#">...</a>
+		</li>
+		<%}%> <%}%>
+		<!--  -->
+		<% if (current == pages) { %>
+		<li class="page-item disabled">
+			<a class="page-link" href="#">Trang cuối</a>
+		</li>
+		<%} else { %>
+		<li class="page-item">
+			<a class="page-link" href="<%= url %>page=<%= pages%>"> Trang cuối </a>
+		</li>
+		<%}%>
+	</ul>
+	<% } %>
+</div>

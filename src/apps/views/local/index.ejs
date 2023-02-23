@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<%- include('layouts/head'); -%>
+	</head>
+	<body>
+		<!--	Header	-->
+		<%- include('layouts/header'); -%>
+		<!--	End Header	-->
+
+		<!--	Body	-->
+		<div id="body">
+			<div class="container">
+				<div class="row">
+					<div class="col-lg-12 col-md-12 col-sm-12">
+						<!-- Navigation  -->
+						<%- include('layouts/navbar'); -%>
+						<!-- End Navigation  -->
+					</div>
+				</div>
+				<div class="row">
+					<div id="main" class="col-lg-8 col-md-12 col-sm-12">
+						<!--	Slider	-->
+						<%- include('layouts/slider'); -%>
+						<!--	End Slider	-->
+
+						<!--	Feature Product	-->
+						<div class="products">
+							<h3>Sản phẩm nổi bật</h3>
+							<div class="product-list card-deck">
+								<% for (let feature of featuredPrds) {%>
+								<div class="product-item card text-center">
+									<a href="/product/<%= feature.id%>"
+										><img src="/static/local/images/<%= feature.thumbnail%>"
+									/></a>
+									<h4>
+										<a href="/product/<%= feature.id%>"> <%= feature.name%> </a>
+									</h4>
+									<p>Giá Bán: <span><%= feature.price%></span></p>
+								</div>
+								<%}%>
+							</div>
+						</div>
+						<!--	End Feature Product	-->
+
+						<!--	Latest Product	-->
+						<div class="products">
+							<h3>Sản phẩm mới</h3>
+							<div class="product-list card-deck">
+								<% for (let newPrd of statusPrds) { %>
+								<div class="product-item card text-center">
+									<a href="/product/<%=newPrd.id%>"
+										><img src="/static/local/images/<%= newPrd.thumbnail%>"
+									/></a>
+									<h4>
+										<a href="/product/<%=newPrd.id%>"><%= newPrd.name%></a>
+									</h4>
+									<p>Giá Bán: <span><%= newPrd.price%></span></p>
+								</div>
+								<%}%>
+							</div>
+						</div>
+						<!--	End Latest Product	-->
+					</div>
+
+					<!-- Sidebar -->
+					<%- include('layouts/sidebar'); -%>
+					<!-- End Sidebar -->
+				</div>
+			</div>
+		</div>
+		<!--	End Body	-->
+
+		<!--	Footer	-->
+		<%- include('layouts/footer'); -%>
+		<!--	End Footer	-->
+	</body>
+</html>
