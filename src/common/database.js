@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
-
-module.exports = () => {
-    mongoose.connect('mongodb://localhost/vp_shop_project', {
+mongoose.set('strictQuery', true);
+const db = () => {
+    mongoose.connect('mongodb://0.0.0.0:27017/tech_shop', {
         useNewUrlParser: true,
         useUnifiedTopology: true,
         useFindAndModify: false,
@@ -9,3 +9,4 @@ module.exports = () => {
     });
     return mongoose; 
 };
+module.exports = db;

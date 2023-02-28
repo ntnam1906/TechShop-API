@@ -7,8 +7,7 @@ const CommentModel = require('../models/comments');
 const indexLocal = async (req, res) => {
     const userId = req.session.userId
     const featuredPrd = await ProductsModel.find({
-        featured: true,
-        is_stock: false
+        featured: true
     }).limit(6)
 
     const statusPrd = await ProductsModel.find({
