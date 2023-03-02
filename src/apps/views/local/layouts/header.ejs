@@ -25,9 +25,12 @@
 				<button class="btn-log btn-danger">
 					<a class="mt-4 mr-2 login" href="/login">Đăng nhập</a>
 				</button>
+				<button class="btn-register">
+					<a class="mt-4 mr-2 register" href="/register">Đăng ký</a>
+				</button>
 				<%} else if(loggedIn) {%>
-				<a class="mt-4 mr-2" href="/logout">Đăng xuất</a>
-				<a class="mt-4 mr-2" href="/cart">Giỏ hàng</a>
+				<a class="mt-4 mr-2 hv" href="/logout">Đăng xuất</a>
+				<a class="mt-4 mr-2 hv" href="/cart">Giỏ hàng</a>
 				<span class="mt-3"><%= cartPrds%></span>
 				<%}%>
 			</div>
