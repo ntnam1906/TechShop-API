@@ -32,9 +32,8 @@ const postLogin = async (req, res) => {
 }
 
 const getLogout = (req, res) => {
-    req.session.destroy()
-    res.render('admin/login', {
-        error: null
+    req.session.destroy(() => {
+        res.redirect('/login')
     })
 }
 
