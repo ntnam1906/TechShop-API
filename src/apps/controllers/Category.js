@@ -8,24 +8,21 @@ const indexCategory = async (req, res) => {
     const noPage = (pagination.perPage * pagination.page) - pagination.perPage
     try {
         const categories = await CategoriesModel.find().skip(noPage).limit(pagination.perPage)
-        const countUsers = await CategoriesModel.countDocuments()
-        res.render('admin/category', {
+        const countCategories = await CategoriesModel.countDocuments()
+        res.status(200).json({
             categories: categories,
             current: pagination.page,
-            pages: Math.ceil(countUsers / pagination.perPage),
+            pages: Math.ceil(countCategories / pagination.perPage),
             namepage: "category"
         })
+        
     } catch (error) {
-        console.log(error);
+        res.status(404).json({
+            massage: error.message
+        })
     }
 }
 
-const addCategory = (req, res) => {
-    res.render('admin/add_category', {
-        error: null,
-        message: null,
-    })
-}
 
 const newCategory = async (req, res) => {
     const titleCategory = req.body.cat_name
@@ -39,32 +36,24 @@ const newCategory = async (req, res) => {
                 slug: titleCategory
             })
             const saveCategory = await createCategory.save()
-            res.render('admin/add_category', {
-                error: null,
-                message: "Thêm thành công "
-            })
+            if(saveCategory) {
+                res.status(201).json({
+                    message: 'Thêm danh mục thành công',
+                    data: saveCategory
+                })
+            }
         } else if (titleCategory == checkTitle.title) {
-            res.render('admin/add_category', {
-                error: "Danh mục đã tồn tại ! ",
-                message: null
+            res.status(404).json({
+                message: 'Danh mục đã tồn tại',
             })
         }
     } catch (error) {
-        res.render('admin/add_category', {
-            error: error.message,
-            message: null,
+        res.status(404).json({
+            message: error.message,
         })
     }
 }
 
-const editCategory = async (req, res) => {
-    const dataCategory = await findIdCategory(req.params.id)
-    res.render('admin/edit_category', {
-        category: dataCategory,
-        error: null,
-        message: null
-    })
-}
 
 const updateCategory = async (req, res) => {
     const titleCategory = req.body.cat_name
@@ -81,25 +70,21 @@ const updateCategory = async (req, res) => {
                 title: titleCategory,
                 slug: titleCategory
             })
-            const updateData = await findIdCategory(req.params.id)
-            res.render('admin/edit_category', {
-                category: updateData,
-                error: null,
-                message: "Update thành công"
-            })
+            // const updateData = await findIdCategory(req.params.id)
+            if(updateCategory) {
+                res.status(200).json({
+                    message: "Update danh mục thành công"
+                })
+            }
         } else if (titleCategory === checkTitle.title) {
-            res.render('admin/edit_category', {
-                category: dataCategory,
-                error: "Danh mục đã tồn tại !",
-                message: null
+            res.status(404).json({
+                message: "Danh mục đã tồn tại"
             })
         }
 
     } catch (error) {
-        res.render('admin/edit_category', {
-            category: dataCategory,
-            error: error.message,
-            message: null
+        res.status(404).json({
+            message: error.message
         })
     }
 }
@@ -109,9 +94,16 @@ const deleteCategory = async (req, res) => {
         const idCategory = await CategoriesModel.deleteOne({
             _id: req.params.id
         })
-        res.redirect('/admin/category')
+        if(idCategory) {
+            res.status(200).json({
+                message: "Xóa danh mục thành công",
+                data: idCategory,
+            })
+           }
     } catch (error) {
-        console.log(error);
+        res.status(404).json({
+            message: error.message
+        })
     }
 }
 
@@ -130,9 +122,7 @@ const findIdCategory = async (idCategory) => {
 }
 module.exports = {
     indexCategory: indexCategory,
-    addCategory: addCategory,
     newCategory: newCategory,
-    editCategory: editCategory,
     updateCategory: updateCategory,
     deleteCategory: deleteCategory
 }

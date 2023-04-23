@@ -46,6 +46,24 @@
 	padding:15px 20px;
 	color:#FFF;
 	text-decoration:none;}
+#ibx a{
+	display: inline-table;
+	margin-left: 20px;
+	border: 1px solid #37c3e6;
+	background-color: #37c3e6;
+	border-radius: 3px;
+	padding: 15px 30px;
+	color: #333;
+	text-decoration: none;
+	font-weight: 500;
+}
+#ibx a:hover{
+	color:#1cb9e0;
+	background:#FFF;
+}
+.btn-contain {
+	display: flex;
+}
 #comment button{
 	background:#EB1F27;
 	border:none;}

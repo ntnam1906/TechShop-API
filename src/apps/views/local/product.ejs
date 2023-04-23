@@ -39,14 +39,10 @@
 										<li><span>Bảo hành:</span><%= product.warranty%></li>
 										<br />
 										<br />
-										<br />
-										<br />
 										<%} else {%>
 										<li><span>Bảo hành:</span><%= product.warranty%></li>
 										<%}%> <% if (product.accessories.length >= 10 ) {%>
 										<li><span>Đi kèm:</span> <%= product.accessories%></li>
-										<br />
-										<br />
 										<br />
 										<br />
 										<%} else {%>
@@ -62,8 +58,13 @@
 										<li id="status-false">Hết hàng</li>
 										<%}%>
 									</ul>
-									<div id="add-cart">
-										<a href="/product/add-cart/<%= product._id %>">Mua ngay</a>
+									<div class="btn-contain">
+										<div id="add-cart">
+											<a href="/product/add-cart/<%= product._id %>">Mua ngay</a>
+										</div>
+										<div id="ibx">
+											<a href="/inbox>">Chat để nhận tư vấn</a>
+										</div>
 									</div>
 								</div>
 							</div>

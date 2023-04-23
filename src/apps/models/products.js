@@ -1,7 +1,10 @@
 const mongoose = require('../../common/database')();
 const Schema = mongoose.Schema;
 const productSchema = new Schema({
-    thumbnail: String,
+    thumbnail: {
+        data: Buffer,
+        contentType: String
+    },
     description: String,
     price: Number,
     cat_id: {

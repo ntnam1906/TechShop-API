@@ -30,8 +30,8 @@
 				</button>
 				<%} else if(loggedIn) {%>
 				<a class="mt-4 mr-2 hv" href="/logout">Đăng xuất</a>
-				<a class="mt-4 mr-2 hv" href="/cart">Giỏ hàng</a>
-				<span class="mt-3"><%= cartPrds%></span>
+				<a class="mt-4 hv" href="/cart">Giỏ hàng</a>
+				<span class="mt-3 mr-3"><%= cartPrds%></span>
 				<%}%>
 			</div>
 		</div>
@@ -46,3 +46,6 @@
 		<span class="navbar-toggler-icon"></span>
 	</button>
 </div>
+filename: function (req, file, cb) {
+	cb(null, Date.now() + '-' + file.originalname )
+  }

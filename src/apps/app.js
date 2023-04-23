@@ -5,13 +5,24 @@ const config = require('config');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const fileUpload = require('express-fileupload');
+const path = require('path');
+const cors = require('cors')
 
+const mongoose = require('../common/database')();
 
 app.use('/static', express.static(config.get('app.static_folder')))
 app.set('views', config.get('app.view_folder'))
 app.set('view engine', config.get('app.view_engine'))
 app.use(express.urlencoded({extended: true}))
 app.use(express.json())
+app.use('/uploads', express.static('uploads'));
+
+app.use(
+  cors({
+    preflightContinue: true,
+  }),
+);
+
 
 //session
 app.use(session({
@@ -30,9 +41,8 @@ app.use("*", (req, res, next) => {
 //fileupload
 app.use(fileUpload())
 
-//Router
-const webRouter = require('../routers/web');
-app.use(webRouter);
+const mainRouter = require('../routers/index');
+app.use(mainRouter);
 
 
 module.exports = app;

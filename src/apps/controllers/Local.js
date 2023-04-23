@@ -2,36 +2,45 @@ const ProductsModel = require('../models/products');
 const CategoriesModel = require('../models/categories');
 const CartModel = require('../models/carts');
 const CommentModel = require('../models/comments');
+const UsersModel = require('../models/users');
 
 const indexLocal = async (req, res) => {
-    const userId = req.session.userId
-    const featuredPrd = await ProductsModel.find({
-        featured: true
-    }).limit(6)
+    try {
+        const userId = req.session.userId
+        const featuredPrd = await ProductsModel.find({
+            featured: true
+        }).limit(6)
 
-    const statusPrd = await ProductsModel.find({
-        status: "Máy Mới 100%",
-        is_stock: true
-    }).limit(6)
+        const statusPrd = await ProductsModel.find({
+            status: "Máy Mới 100%",
+            is_stock: true
+        }).limit(6)
 
-    const dataCategory = await getAllCategories()
+        const dataCategory = await getAllCategories()
 
-    if (userId) {
-        const result = await checkCart(userId)
-        res.render('local/index', {
-            featuredPrds: featuredPrd,
-            statusPrds: statusPrd,
-            cartPrds: result,
-            categories: dataCategory
-        })
-    } else {
-        res.render('local/index', {
-            featuredPrds: featuredPrd,
-            statusPrds: statusPrd,
-            categories: dataCategory
+        if (userId) {
+            const result = await checkCart(userId)
+            res.status(200).json({
+                featuredPrds: featuredPrd,
+                statusPrds: statusPrd,
+                cartPrds: result,
+                categories: dataCategory
+            })
+            
+        } else {
+           res.status(200).json({
+                featuredPrds: featuredPrd,
+                statusPrds: statusPrd,
+                categories: dataCategory
+            })
+        }
+        
+    }
+    catch (err) {
+        res.status(404).json({
+            message: err.message
         })
     }
-
 }
 
 const categoryLocal = async (req, res) => {
@@ -59,7 +68,7 @@ const categoryLocal = async (req, res) => {
 
         if (userId) {
             const result = await checkCart(userId)
-            res.render('local/category', {
+            res.status(200).json({
                 products: limitPrd,
                 total: dataPrds,
                 title: titleCategory.title,
@@ -70,7 +79,7 @@ const categoryLocal = async (req, res) => {
                 categories: dataCategory
             })
         } else {
-            res.render('local/category', {
+            res.status(200).json({
                 products: limitPrd,
                 total: dataPrds,
                 title: titleCategory.title,
@@ -81,7 +90,9 @@ const categoryLocal = async (req, res) => {
             })
         }
     } catch (error) {
-        console.log(error);
+        res.status(404).json({
+            message: error.message
+        })
     }
 }
 
@@ -102,24 +113,22 @@ const productLocal = async (req, res) => {
     try {
         if (userId) {
             const result = await checkCart(userId)
-            res.render('local/product', {
+            res.status(200).json({
                 product: dataPrd,
                 cartPrds: result,
                 categories: dataCategory,
                 comments: dataComment
             })
         } else {
-            res.render('local/product', {
+            res.status(200).json({
                 product: dataPrd,
                 categories: dataCategory,
                 comments: dataComment
             })
         }
     } catch (error) {
-        res.render('local/product', {
-            product: "Không có thiết bị này",
-            cartPrds: null,
-            categories: dataCategory
+        res.status(404).json({
+            message: "Không có thiết bị này"
         })
     }
 }
@@ -137,19 +146,20 @@ const addProductLocal = async (req, res) => {
         })
         if (addCart) {
             const result = await checkCart(userId)
-            res.render('local/success', {
+            res.status(200).json({
                 message: "Sản phẩm đã được thêm vào giỏ hàng",
                 cartPrds: result
             })
         }
     } else {
-        res.redirect('/login')
+        res.redirect('/api/local/login')
     }
 }
 
 const commentPrdLocal = async (req, res) => {
-    const userId = req.session.userId
-    if (userId) {
+    const userId = req.userId
+    const user = await UsersModel.findById(userId)
+    if (user) {
         const prdId = req.params.id
         const content = req.body.comm_details
         const comment = await CommentModel.create({
@@ -158,16 +168,21 @@ const commentPrdLocal = async (req, res) => {
             body: content
         })
         if (comment) {
-            res.redirect(`/product/${prdId}`)
+            res.status(200).json({
+                message: 'SUCCESS',
+            });
         }
     } else {
-        res.redirect('/login')
+        return res.status(401).json({
+            message: 'UNAUTHORIZED',
+          });
     }
 }
 
 const cartLocal = async (req, res) => {
-    const userId = req.session.userId
-    if (userId) {
+    const userId = req.userId
+    const user = await UsersModel.findById(userId)
+    if (user) {
         const dataCategory = await getAllCategories()
         const dataCart = await CartModel.find({
             user_id: userId
@@ -178,7 +193,7 @@ const cartLocal = async (req, res) => {
             totalMoney += doc.items.price
         }
         if (dataCart) {
-            res.render('local/cart', {
+            res.status(200).json({
                 dataCart: dataCart,
                 totalMoney: totalMoney,
                 cartPrds: result,
@@ -186,39 +201,47 @@ const cartLocal = async (req, res) => {
             })
         }
     } else {
-        res.redirect('/login')
+        res.status(401).json({
+            message: "UNAUTHORIZED"
+        })
     }
 }
 
 const deleteCartLocal = async (req, res) => {
-    const userId = req.session.userId
-    if (userId) {
+    const userId = req.userId
+    const user = await UsersModel.findById(userId)
+    if (user) {
         const dataCart = await CartModel.deleteOne({
             user_id: userId
         })
         if (dataCart) {
-            res.redirect('/cart')
+            res.status(200).json({
+                message: 'Xóa thành công',
+                data: dataCart
+            })
         }
     } else {
-        res.redirect('/login')
+        res.status(401).json({
+            message: "UNAUTHORIZED"
+        })
     }
 }
 
-const cartReloadLocal = (req, res) => {
-    res.redirect('/cart')
-}
 
 const payCartLocal = async (req, res) => {
-    const userId = req.session.userId
-    if (userId) {
+    const userId = req.userId
+    const user = await UsersModel.findById(userId)
+    if (user) {
         const delCart = await CartModel.deleteMany()
         const result = await checkCart(userId)
-        res.render('local/success', {
+        res.status(200).json({
             message: "Sản phẩm đã được mua thành công",
             cartPrds: result
         })
     } else {
-        res.redirect('/login')
+        res.status(401).json({
+            message: "UNAUTHORIZED"
+        })
     }
 }
 
@@ -245,7 +268,7 @@ const searchLocal = async (req, res) => {
         if (userId) {
             const result = await checkCart(userId)
 
-            res.render('local/search', {
+            res.status(200).json({
                 cartPrds: result,
                 dataPrd: dataPrd,
                 search: keyword,
@@ -256,7 +279,7 @@ const searchLocal = async (req, res) => {
                 length: length
             })
         } else {
-            res.render('local/search', {
+            res.status(200).json({
                 dataPrd: dataPrd,
                 search: keyword,
                 current: pagination.page,
@@ -293,7 +316,6 @@ module.exports = {
     productLocal: productLocal,
     addProductLocal: addProductLocal,
     cartLocal: cartLocal,
-    cartReloadLocal: cartReloadLocal,
     deleteCartLocal: deleteCartLocal,
     payCartLocal: payCartLocal,
     searchLocal: searchLocal,

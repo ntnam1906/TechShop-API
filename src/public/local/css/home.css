@@ -37,6 +37,8 @@ body{
 	transition: 0.4s;
 	background-color: #807b7b;
 	margin-top: 14px;
+	float: right;
+	margin-left: 10px;
 }
 .btn-register:hover {
 	background-color: #686464;
@@ -54,7 +56,6 @@ body{
 	font-weight: 400;
 	padding-left: 7px;
 	width: 100%;
-	
 }
 #logo-footer {
 	width: 90px;
@@ -108,7 +109,9 @@ body{
 	cursor:pointer;}
 #main, #sidebar{
 	margin-top:10px;}	
-	
+.prd-nav{
+	padding: 10px;
+}
 #slide .carousel-inner{
 	border-radius:3px !important;}	
 

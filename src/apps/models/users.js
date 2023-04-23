@@ -1,11 +1,19 @@
-const mongoose = require('../../common/database')()
+const mongoose = require('../../common/database')();
 const Schema = mongoose.Schema;
-const userSchema = new Schema({
-    email: String,
-    password: String,
-    role: String,
-    full_name: String,
-})
+const userSchema = new Schema(
+    {
+        email: {type: String, required: true, unique: true},
+        password: {type: String, required: true},
+        full_name: {type: String, required: true},
+        access_token: {type: String, require: true},
+        refresh_token: {type: String, require: true},
+        isAdmin: {type: Boolean},
+        role: String
+    },
+    {
+        timestamps: true
+    }
+)
 
 const UsersModel = mongoose.model("users", userSchema, "users");
 module.exports = UsersModel;

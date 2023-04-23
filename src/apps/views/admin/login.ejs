@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
 <!-- /.header -->
-<%- include('layouts/head', {title: 'Đăng Nhập'}); -%>
 
 <body>
 	
@@ -10,9 +9,7 @@
 			<div class="login-panel panel panel-default">
 				<div class="panel-heading">Tech Shop - Administrator</div>
 				<div class="panel-body">
-					<% if(error) {%>
-					<div class="alert alert-danger"><%=error%></div>
-					<%}%>
+					
 					<form role="form" method="post">
 						<fieldset>
 							<div class="form-group">
