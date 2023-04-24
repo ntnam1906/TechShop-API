@@ -53,7 +53,8 @@ const newUsers = async (req, res) => {
                 full_name: User.name,
                 email: User.email,
                 password: hash,
-                role: User.role
+                role: User.role,
+                isActivated: true
             })
             const result = await createUser.save()
             if(result) {

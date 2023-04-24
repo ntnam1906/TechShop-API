@@ -18,13 +18,15 @@ apiLocal.get('/product/add-cart/:id', auth, LocalController.addProductLocal)
 apiLocal.get('/search', LocalController.searchLocal)
 apiLocal.get('/search?:keyword&page=:page', LocalController.searchLocal)
 
-apiLocal.get('/logout', AuthController.logoutLocal)
 
 
 //POST
 
+apiLocal.post('/logout', AuthController.logoutLocal)
 apiLocal.post('/login', AuthController.loginLocal)
 apiLocal.post('/register', AuthController.registerLocal)
+apiLocal.post('/change-password', auth, AuthController.changePassword)
+apiLocal.post('/active', auth, AuthController.activateAccount)
 apiLocal.post('/product/:id', auth, LocalController.commentPrdLocal)
 
 module.exports = apiLocal;

@@ -7,7 +7,14 @@ const userSchema = new Schema(
         full_name: {type: String, required: true},
         access_token: {type: String, require: true},
         refresh_token: {type: String, require: true},
-        isAdmin: {type: Boolean},
+        isActivated: {
+            type: Boolean,
+            default: false,
+        },
+        confirmationToken: {
+            type: String,
+            required: false,
+        },
         role: String
     },
     {

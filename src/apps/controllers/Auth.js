@@ -1,8 +1,8 @@
 const UsersModel = require('../models/users')
 const bcrypt = require('bcrypt')
 const getToken = require('../services/JwtService')
-
-
+const { sendActivationEmail } = require('../functions/sendEmail')
+const { generateConfirmationToken } = require('../functions/token')
 const loginAdmin = async (req, res) => {
     const mail = req.body.email
     const pass = req.body.pass
@@ -46,9 +46,10 @@ const loginAdmin = async (req, res) => {
 }
 
 const getLogout = (req, res) => {
-    req.session.destroy(() => {
-        res.redirect('/login')
-    })
+    res.clearCookie('access_admin_token');
+    res.status(200).json({
+        message: 'Đăng xuất thành công'
+      });
 }
 
 
@@ -70,10 +71,21 @@ const loginLocal = async (req, res) => {
         else {
             const accessToken = await getToken.generalAccessToken({
                 id: dataUser._id,
+                full_name: dataUser.full_name,
+                email: dataUser.email,
+                password: dataUser.password,
+                isActivated: dataUser.isActivated
             })
             const refreshToken = await getToken.generalRefreshToken({
                 id: dataUser._id,
             })
+            if (!dataUser.isActivated) {
+                return res.status(500).json({
+                  message: `User is not activated`,
+                  isNotVerified: true,
+                  access_token: accessToken
+                });
+            }
             return res.status(200).json({
                 message: 'Đăng nhập thành công',
                 access_token: accessToken,
@@ -88,6 +100,126 @@ const loginLocal = async (req, res) => {
     }
 }
 
+const changePassword = async (req, res, next) => {
+    console.log(req.userId)
+    try {
+      let userId = req.userId;
+      let user = await UsersModel.findById(userId);
+      if (user == null) {
+        return res.status(401).json({
+          message: 'UNAUTHORIZED',
+        });
+      }
+      const { currentPassword, newPassword } = req.body;
+      // password
+      
+      const validPassword = await bcrypt.compare(currentPassword, user.password);
+      if (!validPassword) {
+        return res.status(400).json({
+          message: 'Mật khẩu cũ không đúng !',
+          code: 'CURRENT_PASSWORD_INCORRECT',
+        });
+      }
+      if (newPassword.length < 6) {
+        return res.status(400).json({
+            message: 'Mật khẩu mới phải từ 6 kí tự trở lên',
+          });
+    }
+    if(newPassword === currentPassword) {
+        return res.status(400).json({
+            message: 'Mật khẩu mới phải khác mật khẩu cũ',
+          });
+    }
+      //Hash password
+      const salt = await bcrypt.genSalt(10);
+      const hashedNewPassword = await bcrypt.hash(newPassword, salt);
+  
+      user = await UsersModel.findOneAndUpdate(
+        { _id: userId },
+        {
+          password: hashedNewPassword,
+        },
+        {
+          new: true,
+          runValidators: true,
+        }
+      );
+  
+      if (!user) {
+        return res
+          .status(404)
+          .json({ message: 'Can not find user' });
+      }
+  
+      // create and assign a token
+      const accessToken = await getToken.generalAccessToken({
+            full_name: user.full_name,
+            email: user.email,
+            password: user.password,
+            id: user._id,
+            isActivated: user.isActivated
+        })
+        const refreshToken = await getToken.generalRefreshToken({
+            full_name: user.full_name,
+            email: user.email,
+            password: user.password,
+            id: user._id,
+        })
+      user = await UsersModel.findById(userId)
+      return res.status(200).json({
+        message: "Đổi mật khẩu thành công",
+        data: user,
+        access_token: accessToken,
+        refresh_token: refreshToken
+      });
+    } catch (e) {
+      return res.status(500).json({
+        message: e.message,
+      });
+    }
+  };
+
+const activateAccount =  async (req, res, next) => {
+    const userId = req.userId
+    const token = req.body.token
+  
+    try {
+      const user = await UsersModel.findById(userId);
+  
+      if (!user) {
+        return res.status(500).json({
+          message: 'User not found!',
+        });
+      }
+  
+      if (user.confirmationToken !== token) {
+        return res.status(500).json({
+          message: 'Mã xác minh không chính xác',
+        });
+      }
+  
+      await UsersModel.findByIdAndUpdate(user._id, {
+        isActivated: true,
+      });
+  
+      const accessToken = await getToken.generalAccessToken({
+        full_name: user.full_name,
+        email: user.email,
+        password: user.password,
+        id: user._id,
+        isActivated: user.isActivated
+    })
+  
+      res.status(201).json({
+        message: "OK",
+        access_token: accessToken,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: e.message,
+      });
+    }
+  };
 
 const registerLocal = async (req, res) => {
     try {
@@ -115,6 +247,9 @@ const registerLocal = async (req, res) => {
         try {
             if (!checkemail) {
                 if (user.password === user.re_pass) {
+                    // confirmation
+                    const confirmationToken = generateConfirmationToken();
+                    sendActivationEmail(user.email, confirmationToken);
                     ////Hash Password
                     const hash = bcrypt.hashSync(user.password, 10)
 
@@ -122,7 +257,9 @@ const registerLocal = async (req, res) => {
                         full_name: user.full_name,
                         email: user.email,
                         password: hash,
-                        role: "member"
+                        role: "member",
+                        isActivated: false,
+                        confirmationToken: confirmationToken
                     })
                     const result = await createUser.save()
                     if (result) {
@@ -158,9 +295,10 @@ const registerLocal = async (req, res) => {
 }
 
 const logoutLocal = (req, res) => {
-    req.session.destroy(() => {
-        res.redirect('/')
-    })
+    res.clearCookie('access_token');
+    res.status(200).json({
+        message: 'Đăng xuất thành công'
+      });
 }
 module.exports = {
     loginAdmin: loginAdmin,
@@ -168,4 +306,6 @@ module.exports = {
     loginLocal: loginLocal,
     registerLocal: registerLocal,
     logoutLocal: logoutLocal,
+    changePassword: changePassword,
+    activateAccount: activateAccount
 }

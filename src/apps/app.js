@@ -4,7 +4,6 @@ const ejs = require('ejs');
 const config = require('config');
 const bodyParser = require('body-parser');
 const session = require('express-session');
-const fileUpload = require('express-fileupload');
 const path = require('path');
 const cors = require('cors')
 
@@ -37,9 +36,6 @@ app.use("*", (req, res, next) => {
   loggedIn = req.session.userId
   next()
 })
-
-//fileupload
-app.use(fileUpload())
 
 const mainRouter = require('../routers/index');
 app.use(mainRouter);

@@ -152,7 +152,9 @@ const addProductLocal = async (req, res) => {
             })
         }
     } else {
-        res.redirect('/api/local/login')
+        return res.status(401).json({
+            message: 'UNAUTHORIZED',
+          });
     }
 }
 

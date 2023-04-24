@@ -4,7 +4,7 @@ const config = require('config');
 const slugify = require('slugify');
 const multer = require('multer');
 const fs = require('fs');
-
+const Buffer = require('buffer')
 const indexProduct = async (req, res) => {
     const pagination = {
         page: Number(req.query.page) || 1,
@@ -31,7 +31,6 @@ const indexProduct = async (req, res) => {
 
 
 const newProduct = async (req, res) => {
-    console.log(req.body)
     try {
     const imagePath = req.file.path
 
@@ -69,25 +68,29 @@ const newProduct = async (req, res) => {
 
 
 const updateProduct = async (req, res) => {
-    const product = {
-        name: req.body.prd_name,
-        slug: req.body.prd_name,
-        price: req.body.prd_price,
-        warranty: req.body.prd_warranty,
-        accessories: req.body.prd_accessories,
-        promotion: req.body.prd_promotion,
-        status: req.body.prd_new,
-        thumbnail: req.files.prd_image,
-        cat_id: req.body.cat_id,
-        is_stock: req.body.prd_is_stock,
-        features: req.body.prd_featured,
-        description: req.body.prd_details
-    }
-    const uploadImage = config.get('app.file_upload') + product.thumbnail.name
-    product.thumbnail.mv(uploadImage)
-    const dataProduct = await findIdProduct(req.params.id)
-    const dataCategory = await CategoriesModel.find()
+    
     try {
+        const imagePath = req.file.path
+    
+        const buffer = fs.readFileSync(imagePath)
+        const product = {
+            name: req.body.prd_name,
+            slug: req.body.prd_name,
+            price: req.body.prd_price,
+            warranty: req.body.prd_warranty,
+            accessories: req.body.prd_accessories,
+            promotion: req.body.prd_promotion,
+            status: req.body.prd_new,
+            thumbnail: {
+                data: buffer,
+                contentType: 'image/png'
+            },
+            cat_id: req.body.cat_id,
+            is_stock: req.body.prd_is_stock,
+            features: req.body.prd_featured,
+            description: req.body.prd_details
+        }
+        
         const updateProduct = await ProductsModel.findByIdAndUpdate({
             _id: req.params.id
         }, {
@@ -98,7 +101,7 @@ const updateProduct = async (req, res) => {
             accessories: product.accessories,
             promotion: product.promotion,
             status: product.status,
-            thumbnail: '/products/' + product.thumbnail.name,
+            thumbnail: product.thumbnail,
             cat_id: product.cat_id,
             is_stock: product.is_stock,
             features: product.features,
@@ -108,11 +111,10 @@ const updateProduct = async (req, res) => {
         if(updateProduct) {
             res.status(201).json({
                 message: 'Update sản phẩm thành công',
-                data: saveProduct
             })
         }
     } catch (error) {
-        res.status(404).json({
+        res.status(500).json({
             message: error.message,
         })
     }
