@@ -8,7 +8,7 @@ const cartSchema = new Schema({
     items: {
         type: Object,
         require: false
-    }
+    },
 }, {
     timestamps: true
 })

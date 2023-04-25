@@ -101,7 +101,6 @@ const loginLocal = async (req, res) => {
 }
 
 const changePassword = async (req, res, next) => {
-    console.log(req.userId)
     try {
       let userId = req.userId;
       let user = await UsersModel.findById(userId);

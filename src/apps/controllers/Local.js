@@ -3,7 +3,7 @@ const CategoriesModel = require('../models/categories');
 const CartModel = require('../models/carts');
 const CommentModel = require('../models/comments');
 const UsersModel = require('../models/users');
-
+const OrdersModel = require('../models/orders');
 const indexLocal = async (req, res) => {
     try {
         const userId = req.session.userId
@@ -134,27 +134,34 @@ const productLocal = async (req, res) => {
 }
 
 const addProductLocal = async (req, res) => {
-    const userId = req.userId
-    if (userId) {
-        const idPrd = req.params.id
-        const dataPrd = await ProductsModel.findById({
-            _id: idPrd
-        })
-        const addCart = await CartModel.create({
-            user_id: userId,
-            items: dataPrd
-        })
-        if (addCart) {
-            const result = await checkCart(userId)
-            res.status(200).json({
-                message: "Sản phẩm đã được thêm vào giỏ hàng",
-                cartPrds: result
+    try {
+        const userId = req.userId
+        if (userId) {
+            const idPrd = req.params.id
+            const dataPrd = await ProductsModel.findById({
+                _id: idPrd
             })
+            const addCart = await CartModel.create({
+                user_id: userId,
+                items: dataPrd
+            })
+            if (addCart) {
+                const result = await checkCart(userId)
+                res.status(200).json({
+                    message: "Sản phẩm đã được thêm vào giỏ hàng",
+                    cartPrds: result
+                })
+            }
+        } else {
+            return res.status(401).json({
+                message: 'UNAUTHORIZED',
+            });
         }
-    } else {
-        return res.status(401).json({
-            message: 'UNAUTHORIZED',
-          });
+    }
+    catch(error) {
+        return res.status(500).json({
+            message: error.message
+        })
     }
 }
 
@@ -199,7 +206,6 @@ const cartLocal = async (req, res) => {
                 dataCart: dataCart,
                 totalMoney: totalMoney,
                 cartPrds: result,
-                categories: dataCategory
             })
         }
     } else {
@@ -214,7 +220,7 @@ const deleteCartLocal = async (req, res) => {
     const user = await UsersModel.findById(userId)
     if (user) {
         const dataCart = await CartModel.deleteOne({
-            user_id: userId
+            _id: req.params.id
         })
         if (dataCart) {
             res.status(200).json({
