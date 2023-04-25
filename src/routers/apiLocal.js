@@ -27,6 +27,8 @@ apiLocal.post('/login', AuthController.loginLocal)
 apiLocal.post('/register', AuthController.registerLocal)
 apiLocal.post('/change-password', auth, AuthController.changePassword)
 apiLocal.post('/active', auth, AuthController.activateAccount)
+apiLocal.post('/forgot-password', AuthController.forgotPassword)
+apiLocal.post('/send-mail', AuthController.sendToken)
 apiLocal.post('/product/:id', auth, LocalController.commentPrdLocal)
 
 module.exports = apiLocal;

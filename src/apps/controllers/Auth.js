@@ -300,6 +300,102 @@ const logoutLocal = (req, res) => {
         message: 'Đăng xuất thành công'
       });
 }
+const sendToken = async (req, res) => {
+  try {
+    const email = req.body.email
+    const dataUser = await UsersModel.findOne({
+      email: email,
+    })
+    if(dataUser) {
+      // confirmation
+      const confirmationToken = generateConfirmationToken();
+      sendActivationEmail(dataUser.email, confirmationToken);
+
+      const user = await UsersModel.findOneAndUpdate(
+        { _id: dataUser._id },
+        {
+          confirmationToken: confirmationToken,
+        },
+        {
+          new: true,
+        }
+      );
+  
+      if (!user) {
+        return res
+          .status(404)
+          .json({ message: 'Can not find user' });
+      }
+      return res.status(201).json({
+        message: `Vui lòng kiểm tra ${dataUser.email} để nhận mã xác minh`
+      })
+    }
+  else {
+    return res.status(404).json({
+      message: "Email chưa được đăng kí"
+    })
+  }
+  }
+  catch(error) {
+    return res.status(500).json({
+      message: e.message
+    })
+  }
+}
+const forgotPassword = async (req, res) => {
+  try {
+    const email = req.body.email
+    const token = req.body.token
+    const newPassword = req.body.newPassword
+    const dataUser = await UsersModel.findOne({
+      email: email,
+    })
+    if(!email) {
+      return res.status(404).json({
+        message: "Vui lòng nhập Email"
+      })
+    }
+    
+    if(dataUser) {
+      if(token !== dataUser.confirmationToken) {
+        return res.status(404).json({
+          message: "Mã xác minh không đúng"
+        })
+      }
+      if(newPassword.length < 6) {
+        return res.status(404).json({
+          message: "Mật khẩu phải từ 6 kí tự trở lên"
+        })
+      }
+      const hash = bcrypt.hashSync(newPassword, 10)
+
+      const user = await UsersModel.findOneAndUpdate(
+        { _id: dataUser._id },
+        {
+          password: hash,
+        },
+        {
+          new: true,
+        }
+      );
+      return res.status(200).json({
+        message: "Đổi mật khẩu thành công"
+      })
+    }
+  else {
+    return res.status(404).json({
+      message: "Email chưa được đăng kí"
+    })
+  }
+  }
+  catch(error) {
+    return res.status(404).json({
+      message: error.message
+    })
+  }
+
+}
+
 module.exports = {
     loginAdmin: loginAdmin,
     getLogout: getLogout,
@@ -307,5 +403,7 @@ module.exports = {
     registerLocal: registerLocal,
     logoutLocal: logoutLocal,
     changePassword: changePassword,
-    activateAccount: activateAccount
+    activateAccount: activateAccount,
+    forgotPassword: forgotPassword,
+    sendToken: sendToken
 }

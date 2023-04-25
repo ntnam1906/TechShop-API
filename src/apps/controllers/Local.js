@@ -134,7 +134,7 @@ const productLocal = async (req, res) => {
 }
 
 const addProductLocal = async (req, res) => {
-    const userId = req.session.userId
+    const userId = req.userId
     if (userId) {
         const idPrd = req.params.id
         const dataPrd = await ProductsModel.findById({
