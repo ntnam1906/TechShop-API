@@ -1,8 +1,8 @@
 const mongoose = require('mongoose')
 
 const orderSchema = new mongoose.Schema({
-    items: {
-        type: Object,
+    products: {
+        type: Array,
         require: false
     },
     shippingAddress: {
@@ -21,5 +21,5 @@ const orderSchema = new mongoose.Schema({
         timestamps: true,
     }
 );
-const Order = mongoose.model('orders', orderSchema, "carts");
+const Order = mongoose.model('orders', orderSchema, "orders");
 module.exports = Order

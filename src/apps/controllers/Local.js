@@ -237,20 +237,50 @@ const deleteCartLocal = async (req, res) => {
 
 
 const payCartLocal = async (req, res) => {
-    const userId = req.userId
-    const user = await UsersModel.findById(userId)
-    if (user) {
-        const delCart = await CartModel.deleteMany()
-        const result = await checkCart(userId)
-        res.status(200).json({
-            message: "Sản phẩm đã được mua thành công",
-            cartPrds: result
-        })
-    } else {
-        res.status(401).json({
-            message: "UNAUTHORIZED"
-        })
+    try {
+        const userId = req.userId
+        const shippingAddress = {
+            fullName: req.body.fullName,
+            address: req.body.address,
+            email: req.body.email,
+            phone: req.body.phone,
+        }
+        const user = await UsersModel.findById(userId)
+        if (user) {
+            const dataCart = await CartModel.find({
+                user_id: userId
+            })
+            let totalMoney = 0
+            for (const doc of dataCart) {
+                totalMoney += doc.items.price
+            }
+            const addOrder = await OrdersModel.create({
+                products: dataCart,
+                shippingAddress: shippingAddress,
+                totalPrice: totalMoney,
+                user: userId,
+                isPaid: false,
+                isComfirmed: false,
+                isCancle: false,
+            })
+            if(addOrder) {
+                await CartModel.deleteMany({user_id: userId})
+                return res.status(201).json({
+                    message: "Sản phẩm đã được mua thành công",
+                })
+            }
+        } else {
+            res.status(401).json({
+                message: "UNAUTHORIZED"
+            })
+        }
     }
+    catch(error) {
+        res.status(500).json({
+            message: error.message
+
+        })
+    } 
 }
 
 const searchLocal = async (req, res) => {

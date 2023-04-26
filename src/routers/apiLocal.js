@@ -1,6 +1,7 @@
 const express = require('express');
 const AuthController = require('../apps/controllers/Auth');
 const LocalController = require('../apps/controllers/Local');
+const OrderController = require('../apps/controllers/Order')
 const auth = require('../apps/middleware/auth')
 const apiLocal = express.Router();
 
@@ -8,7 +9,7 @@ const apiLocal = express.Router();
 
 apiLocal.get('/', LocalController.indexLocal)
 apiLocal.get('/cart', auth, LocalController.cartLocal)
-apiLocal.get('/cart-payment',auth , LocalController.payCartLocal)
+apiLocal.get('/order', auth, OrderController.historOrder)
 apiLocal.get('/category/:id', LocalController.categoryLocal)
 apiLocal.get('/category/:id?page=:page', LocalController.categoryLocal)
 
@@ -30,5 +31,8 @@ apiLocal.post('/send-mail', AuthController.sendToken)
 apiLocal.post('/product/:id', auth, LocalController.commentPrdLocal)
 apiLocal.post('/product/add-cart/:id', auth, LocalController.addProductLocal)
 apiLocal.post('/cart-delete/:id',auth , LocalController.deleteCartLocal)
+apiLocal.post('/cart-payment',auth , LocalController.payCartLocal)
+apiLocal.post('/order-delete/:id',auth , OrderController.deleteOrderLocal)
+
 
 module.exports = apiLocal;

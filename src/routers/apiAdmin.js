@@ -5,6 +5,7 @@ const AdminController = require('../apps/controllers/Admin');
 const UserController = require('../apps/controllers/Users');
 const CategoriesController = require('../apps/controllers/Category');
 const ProductController = require('../apps/controllers/Product');
+const OrderController = require('../apps/controllers/Order')
 const auth = require('../apps/middleware/auth')
 const path = require('path');
 const multer = require('multer');
@@ -32,6 +33,9 @@ apiAdmin.get('/category/?page=:page', auth, CategoriesController.indexCategory)
 apiAdmin.get('/product', auth, ProductController.indexProduct)
 apiAdmin.get('/product/?page=:page', auth, ProductController.indexProduct)
 
+apiAdmin.get('/order', auth, OrderController.orderAdmin)
+apiAdmin.get('/order/?page=:page', auth, OrderController.orderAdmin)
+
 //POST
 apiAdmin.post('/logout', AuthController.getLogout)
 apiAdmin.post('/login',  AuthController.loginAdmin)
@@ -47,5 +51,9 @@ apiAdmin.post('/category/delete/:id', CategoriesController.deleteCategory)
 apiAdmin.post('/product/add', upload.single('thumbnail') , ProductController.newProduct)
 apiAdmin.post('/product/edit/:id', upload.single('thumbnail'), ProductController.updateProduct)
 apiAdmin.post('/product/delete/:id', ProductController.deleteProduct)
+
+apiAdmin.post('/order/cancle/:id', OrderController.cancleOrderAdmin)
+apiAdmin.post('/order/confirm/:id', OrderController.comfirmOrderAdmin)
+
 
 module.exports = apiAdmin
