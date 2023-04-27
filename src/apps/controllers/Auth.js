@@ -82,7 +82,6 @@ const loginLocal = async (req, res) => {
             if (!dataUser.isActivated) {
                 return res.status(500).json({
                   message: `User is not activated`,
-                  isNotVerified: true,
                   access_token: accessToken
                 });
             }
@@ -179,10 +178,10 @@ const changePassword = async (req, res, next) => {
   };
 
 const activateAccount =  async (req, res, next) => {
-    const userId = req.userId
-    const token = req.body.token
   
-    try {
+  try {
+      const userId = req.userId
+      const token = req.body.token
       const user = await UsersModel.findById(userId);
   
       if (!user) {
@@ -200,22 +199,22 @@ const activateAccount =  async (req, res, next) => {
       await UsersModel.findByIdAndUpdate(user._id, {
         isActivated: true,
       });
-  
+      const newUser = await UsersModel.findById(userId)
       const accessToken = await getToken.generalAccessToken({
-        full_name: user.full_name,
-        email: user.email,
-        password: user.password,
-        id: user._id,
-        isActivated: user.isActivated
+        full_name: newUser.full_name,
+        email: newUser.email,
+        password: newUser.password,
+        id: newUser._id,
+        isActivated: newUser.isActivated
     })
-  
+      console
       res.status(201).json({
         message: "OK",
         access_token: accessToken,
       });
     } catch (error) {
       return res.status(500).json({
-        message: e.message,
+        message: error.message,
       });
     }
   };
