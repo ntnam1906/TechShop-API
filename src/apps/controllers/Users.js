@@ -102,15 +102,13 @@ const updateUsers = async (req, res) => {
     
 
     try {
-        const checkEmail = await findEmail(User)
-        if (!checkEmail) {
+        if(dataUser.email === User.email) {
             const hash = bcrypt.hashSync(User.pass, 10)
 
             const updateUser = await UsersModel.findOneAndUpdate({
                 _id: req.params.id
             }, {
                 full_name: User.name,
-                email: User.email,
                 pass: hash,
                 role: User.role
             })
@@ -121,11 +119,34 @@ const updateUsers = async (req, res) => {
                     data: updateUser
                 })
             }
-           
-        } else if (User.email == checkEmail.email) {
-            return res.status(404).json({
-                message: 'Email đã tồn tại',
-            });
+        }
+        else {
+            const checkEmail = await findEmail(User)
+            if (!checkEmail) {
+                const hash = bcrypt.hashSync(User.pass, 10)
+    
+                const updateUser = await UsersModel.findOneAndUpdate({
+                    _id: req.params.id
+                }, {
+                    full_name: User.name,
+                    email: User.email,
+                    pass: hash,
+                    role: User.role,
+                    isActivated: false
+                })
+    
+                if(updateUser) {
+                    res.status(201).json({
+                        message: 'Update thành công',
+                        data: updateUser
+                    })
+                }
+               
+            } else if (User.email == checkEmail.email) {
+                return res.status(404).json({
+                    message: 'Email đã tồn tại',
+                });
+            }
         }
 
     } catch (error) {
