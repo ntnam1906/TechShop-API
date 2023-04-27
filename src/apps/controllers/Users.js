@@ -1,5 +1,7 @@
 const UsersModel = require('../models/users');
 const bcrypt = require('bcrypt')
+const { sendActivationEmail } = require('../functions/sendEmail')
+const { generateConfirmationToken } = require('../functions/token')
 
 const indexUsers = async (req, res) => {
     const pagination = {
@@ -47,6 +49,9 @@ const newUsers = async (req, res) => {
     try {
         const checkEmail = await findEmail(User)
         if (!checkEmail) {
+            const confirmationToken = generateConfirmationToken();
+            sendActivationEmail(User.email, confirmationToken);
+
             const hash = bcrypt.hashSync(User.pass, 10)
 
             const createUser = new UsersModel({
@@ -54,7 +59,8 @@ const newUsers = async (req, res) => {
                 email: User.email,
                 password: hash,
                 role: User.role,
-                isActivated: true
+                isActivated: false,
+                confirmationToken: confirmationToken
             })
             const result = await createUser.save()
             if(result) {
@@ -158,13 +164,21 @@ const updateUsers = async (req, res) => {
 
 const deleteUsers = async (req, res) => {
     try {
-        const idUser = await UsersModel.deleteOne({
-            _id: req.params.id
-        })
-        if(idUser) {
-            res.status(200).json({
-                message: 'Xóa thành công',
+        const userId = req.userId
+        if(userId === req.params.id) {
+            return res.status(500).json({
+                message: 'Không thể tự xóa chính mình'
             })
+        }
+        else {
+            const idUser = await UsersModel.deleteOne({
+                _id: req.params.id
+            })
+            if(idUser) {
+                res.status(200).json({
+                    message: 'Xóa thành công',
+                })
+            }
         }
     } catch (error) {
         res.status(404).json({
