@@ -42,7 +42,7 @@ apiAdmin.post('/login',  AuthController.loginAdmin)
 
 apiAdmin.post('/user/add', UserController.newUsers)
 apiAdmin.post('/user/edit/:id', UserController.updateUsers)
-apiAdmin.post('/user/delete/:id', UserController.deleteUsers)
+apiAdmin.post('/user/delete/:id',auth , UserController.deleteUsers)
 
 apiAdmin.post('/category/add', CategoriesController.newCategory)
 apiAdmin.post('/category/edit/:id', CategoriesController.updateCategory)
