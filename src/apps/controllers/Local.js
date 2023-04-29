@@ -267,6 +267,7 @@ const payCartLocal = async (req, res) => {
                 await CartModel.deleteMany({user_id: userId})
                 return res.status(201).json({
                     message: "Sản phẩm đã được mua thành công",
+                    id: addOrder._id
                 })
             }
         } else {

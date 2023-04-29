@@ -10,6 +10,7 @@ const apiLocal = express.Router();
 apiLocal.get('/', LocalController.indexLocal)
 apiLocal.get('/cart', auth, LocalController.cartLocal)
 apiLocal.get('/order', auth, OrderController.historOrder)
+apiLocal.get('/payment/:id', auth, OrderController.payment)
 apiLocal.get('/category/:id', LocalController.categoryLocal)
 apiLocal.get('/category/:id?page=:page', LocalController.categoryLocal)
 
@@ -33,6 +34,7 @@ apiLocal.post('/product/add-cart/:id', auth, LocalController.addProductLocal)
 apiLocal.post('/cart-delete/:id',auth , LocalController.deleteCartLocal)
 apiLocal.post('/cart-payment',auth , LocalController.payCartLocal)
 apiLocal.post('/order-delete/:id',auth , OrderController.deleteOrderLocal)
+apiLocal.post('/payment-success/:id', auth, OrderController.paymentSuccess)
 
 
 module.exports = apiLocal;

@@ -16,6 +16,7 @@ const orderSchema = new mongoose.Schema({
     isPaid: { type: Boolean, default: false },
     isComfirmed: { type: Boolean, default: false },
     isCancle: { type: Boolean, default: false },
+    emailPayment: { type: String }
 },
     {
         timestamps: true,
