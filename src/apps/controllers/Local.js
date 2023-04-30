@@ -187,6 +187,23 @@ const commentPrdLocal = async (req, res) => {
           });
     }
 }
+const getCommentProduct = async(req, res) => {
+    try {
+        const prdId = req.params.id
+        const comments = await CommentModel.find({prd_id: prdId}).populate('user_id')
+        const users = await UsersModel.find()
+
+        res.status(200).json({
+            comments: comments,
+            users: users,
+            message: "ok"
+        })
+
+    }
+    catch(error) {
+        console.log(error)
+    }
+}
 
 const cartLocal = async (req, res) => {
     const userId = req.userId
@@ -359,4 +376,5 @@ module.exports = {
     payCartLocal: payCartLocal,
     searchLocal: searchLocal,
     commentPrdLocal: commentPrdLocal,
+    getCommentProduct: getCommentProduct
 }
