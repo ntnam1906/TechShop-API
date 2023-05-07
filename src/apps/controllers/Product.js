@@ -4,7 +4,9 @@ const config = require('config');
 const slugify = require('slugify');
 const multer = require('multer');
 const fs = require('fs');
-const Buffer = require('buffer')
+const Buffer = require('buffer');
+const CommentsModel = require('../models/comments');
+const UsersModel = require('../models/users');
 const indexProduct = async (req, res) => {
     const pagination = {
         page: Number(req.query.page) || 1,
@@ -139,15 +141,43 @@ const deleteProduct = async (req, res) => {
     }
 }
 
-const findIdProduct = async (idProduct) => {
-    const productId = await ProductsModel.findOne({
-        _id: idProduct
-    })
-    return productId
+const getCommentAdmin = async(req, res) => {
+    try {
+        const comments = await CommentsModel.find().populate('user_id').populate('prd_id')
+        const users = await UsersModel.find()
+        const products = await ProductsModel.find()
+        res.status(200).json({
+            comments: comments,
+            users: users,
+            products: products,
+            message: "ok"
+        })
+
+    }
+    catch(error) {
+        console.log(error)
+    }
+}
+const deleteCommentAdmin = async(req, res) => {
+    try {
+        const commentId = req.params.id
+
+        const deleteComment = await CommentsModel.findByIdAndRemove(commentId)
+        if(deleteComment) {
+            res.status(202).json({
+                message: "ok"
+            })
+        }
+    }
+    catch(error) {
+        console.log(error)
+    }
 }
 module.exports = {
     indexProduct: indexProduct,
     newProduct: newProduct,
     updateProduct: updateProduct,
-    deleteProduct: deleteProduct
+    deleteProduct: deleteProduct,
+    getCommentAdmin: getCommentAdmin,
+    deleteCommentAdmin: deleteCommentAdmin
 }

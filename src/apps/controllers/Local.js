@@ -205,6 +205,7 @@ const getCommentProduct = async(req, res) => {
     }
 }
 
+
 const cartLocal = async (req, res) => {
     const userId = req.userId
     const user = await UsersModel.findById(userId)
@@ -376,5 +377,5 @@ module.exports = {
     payCartLocal: payCartLocal,
     searchLocal: searchLocal,
     commentPrdLocal: commentPrdLocal,
-    getCommentProduct: getCommentProduct
+    getCommentProduct: getCommentProduct,
 }

@@ -36,6 +36,8 @@ apiAdmin.get('/product/?page=:page', auth, ProductController.indexProduct)
 apiAdmin.get('/order', auth, OrderController.orderAdmin)
 apiAdmin.get('/order/?page=:page', auth, OrderController.orderAdmin)
 
+apiAdmin.get('/comment', auth, ProductController.getCommentAdmin)
+
 //POST
 apiAdmin.post('/logout', AuthController.getLogout)
 apiAdmin.post('/login',  AuthController.loginAdmin)
@@ -54,6 +56,9 @@ apiAdmin.post('/product/delete/:id', ProductController.deleteProduct)
 
 apiAdmin.post('/order/cancle/:id', OrderController.cancleOrderAdmin)
 apiAdmin.post('/order/confirm/:id', OrderController.comfirmOrderAdmin)
+
+apiAdmin.post('/comment/delete/:id', ProductController.deleteCommentAdmin)
+
 
 
 module.exports = apiAdmin
