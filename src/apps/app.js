@@ -8,6 +8,10 @@ const path = require('path');
 const cors = require('cors')
 
 const mongoose = require('../common/database')();
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', "*");
+  next();
+});
 
 app.use('/static', express.static(config.get('app.static_folder')))
 app.set('views', config.get('app.view_folder'))
