@@ -127,12 +127,18 @@ const updateProduct = async (req, res) => {
 const deleteProduct = async (req, res) => {
     try {
         const carts = await CartsModel.find()
+        const comments = await CommentsModel.find()
         const product = await ProductsModel.deleteOne({
             _id: req.params.id
         })
         await carts.forEach(async (cart) => {
             if (cart.items._id.equals(req.params.id)) {
               const success = await CartsModel.deleteOne({ _id: cart._id });
+            }
+        });
+        await comments.forEach(async (comment) => {
+            if (comment.prd_id.equals(req.params.id)) {
+              const success = await CommentsModel.deleteOne({ _id: comment._id });
             }
         });
        if(product) {

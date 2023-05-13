@@ -1,5 +1,5 @@
 const CategoriesModel = require('../models/categories');
-
+const ProductsModel = require('../models/products');
 const indexCategory = async (req, res) => {
     const pagination = {
         page: req.params.page || 1,
@@ -91,9 +91,15 @@ const updateCategory = async (req, res) => {
 
 const deleteCategory = async (req, res) => {
     try {
+        const products = await ProductsModel.find()
         const idCategory = await CategoriesModel.deleteOne({
             _id: req.params.id
         })
+        await products.forEach(async (product) => {
+            if (product.cat_id.equals(req.params.id)) {
+              const success = await ProductsModel.deleteOne({ _id: product._id });
+            }
+        });
         if(idCategory) {
             res.status(200).json({
                 message: "Xóa danh mục thành công",

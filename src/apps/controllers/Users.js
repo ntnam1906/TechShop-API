@@ -1,4 +1,5 @@
 const UsersModel = require('../models/users');
+const CommentsModel = require('../models/comments');
 const bcrypt = require('bcrypt')
 const { sendActivationEmail } = require('../functions/sendEmail')
 const { generateConfirmationToken } = require('../functions/token')
@@ -171,9 +172,15 @@ const deleteUsers = async (req, res) => {
             })
         }
         else {
+            const comments = await CommentsModel.find()
             const idUser = await UsersModel.deleteOne({
                 _id: req.params.id
             })
+            await comments.forEach(async (comment) => {
+                if (comment.user_id.equals(req.params.id)) {
+                  const success = await CommentsModel.deleteOne({ _id: comment._id });
+                }
+            });
             if(idUser) {
                 res.status(200).json({
                     message: 'Xóa thành công',
