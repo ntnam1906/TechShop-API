@@ -77,23 +77,24 @@ const updateProduct = async (req, res) => {
     
         const buffer = fs.readFileSync(imagePath)
         const product = {
-            name: req.body.prd_name,
-            slug: req.body.prd_name,
-            price: req.body.prd_price,
-            warranty: req.body.prd_warranty,
-            accessories: req.body.prd_accessories,
-            promotion: req.body.prd_promotion,
-            status: req.body.prd_new,
+            name: req.body.name,
+            slug: req.body.name,
+            price: req.body.price,
+            warranty: req.body.warranty,
+            accessories: req.body.accessories,
+            promotion: req.body.promotion,
+            status: req.body.status,
             thumbnail: {
                 data: buffer,
                 contentType: 'image/png'
             },
             cat_id: req.body.cat_id,
-            is_stock: req.body.prd_is_stock,
-            features: req.body.prd_featured,
-            description: req.body.prd_details
+            is_stock: req.body.is_stock,
+            features: req.body.features,
+            description: req.body.description
         }
         
+
         const updateProduct = await ProductsModel.findByIdAndUpdate({
             _id: req.params.id
         }, {
@@ -110,8 +111,16 @@ const updateProduct = async (req, res) => {
             features: product.features,
             description: product.description
         })
-       
+        if(product.is_stock === "0") {
+            const carts = await CartsModel.find()
+            await carts.forEach(async (cart) => {
+                if (cart.items._id.equals(updateProduct._id)) {
+                    const success = await CartsModel.deleteOne({ _id: cart._id });
+                }
+            });
+        }
         if(updateProduct) {
+        
             res.status(201).json({
                 message: 'Update sản phẩm thành công',
             })
