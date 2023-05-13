@@ -9,12 +9,12 @@ const indexLocal = async (req, res) => {
         const userId = req.session.userId
         const featuredPrd = await ProductsModel.find({
             featured: true
-        }).limit(6)
+        }).limit(6).sort({ updatedAt: -1 })
 
         const statusPrd = await ProductsModel.find({
             status: "Máy Mới 100%",
             is_stock: true
-        }).limit(6)
+        }).limit(6).sort({ updatedAt: -1 })
 
         const dataCategory = await getAllCategories()
 
@@ -315,7 +315,7 @@ const searchLocal = async (req, res) => {
 
         const dataPrd = await ProductsModel.find({
             name: regex
-        }).skip(noPage).limit(pagination.perPage)
+        }).skip(noPage).limit(pagination.perPage).sort({ updatedAt: -1 })
         const length = await ProductsModel.countDocuments({
             name: regex
         })

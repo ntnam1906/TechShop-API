@@ -1,5 +1,6 @@
 const ProductsModel = require('../models/products');
 const CategoriesModel = require('../models/categories');
+const CartsModel = require('../models/carts');
 const config = require('config');
 const slugify = require('slugify');
 const multer = require('multer');
@@ -16,7 +17,7 @@ const indexProduct = async (req, res) => {
     try {
         const products = await ProductsModel.find().populate({
             path: "cat_id"
-        }).skip(noPage).limit(pagination.perPage)
+        }).skip(noPage).limit(pagination.perPage).sort({ updatedAt: -1 })
         const countProducts = await ProductsModel.countDocuments()
         res.status(200).json({
             products: products,
@@ -125,9 +126,15 @@ const updateProduct = async (req, res) => {
 
 const deleteProduct = async (req, res) => {
     try {
+        const carts = await CartsModel.find()
         const product = await ProductsModel.deleteOne({
             _id: req.params.id
         })
+        await carts.forEach(async (cart) => {
+            if (cart.items._id.equals(req.params.id)) {
+              const success = await CartsModel.deleteOne({ _id: cart._id });
+            }
+        });
        if(product) {
         res.status(200).json({
             message: "Xóa sản phẩm thành công",
@@ -143,7 +150,7 @@ const deleteProduct = async (req, res) => {
 
 const getCommentAdmin = async(req, res) => {
     try {
-        const comments = await CommentsModel.find().populate('user_id').populate('prd_id')
+        const comments = await CommentsModel.find().populate('user_id').populate('prd_id').sort({ updatedAt: -1 })
         const users = await UsersModel.find()
         const products = await ProductsModel.find()
         res.status(200).json({

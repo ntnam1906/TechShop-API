@@ -5,7 +5,7 @@ const paypal = require('@paypal/payouts-sdk');
 const historOrder = async (req, res) => {
     try {
         const userId = req.userId
-        const orders = await OrdersModel.find({user: userId})
+        const orders = await OrdersModel.find({user: userId}).sort({ updatedAt: -1 })
         
         if(userId) {
             if (!orders) {
@@ -147,7 +147,7 @@ const deleteOrderLocal = async (req, res) => {
 const orderAdmin = async (req, res) => {
     try {
         const userId = req.userId
-        const orders = await OrdersModel.find()
+        const orders = await OrdersModel.find().sort({ updatedAt: -1 })
         
         if(userId) {
             return res.status(200).json({

@@ -7,7 +7,7 @@ const indexCategory = async (req, res) => {
     }
     const noPage = (pagination.perPage * pagination.page) - pagination.perPage
     try {
-        const categories = await CategoriesModel.find().skip(noPage).limit(pagination.perPage)
+        const categories = await CategoriesModel.find().skip(noPage).limit(pagination.perPage).sort({ updatedAt: -1 })
         const countCategories = await CategoriesModel.countDocuments()
         res.status(200).json({
             categories: categories,

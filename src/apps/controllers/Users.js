@@ -10,7 +10,7 @@ const indexUsers = async (req, res) => {
     }
     const noPage = (pagination.perPage * pagination.page) - pagination.perPage
     try {
-        const users = await UsersModel.find().skip(noPage).limit(pagination.perPage)
+        const users = await UsersModel.find().skip(noPage).limit(pagination.perPage).sort({ updatedAt: -1 })
         const countUsers = await UsersModel.countDocuments()
         res.status(200).json({
             users: users,
